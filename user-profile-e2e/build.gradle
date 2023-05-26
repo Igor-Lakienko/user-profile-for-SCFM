@@ -1,0 +1,74 @@
+plugins {
+    alias(libs.plugins.springframework)
+    alias(libs.plugins.openapi.generator)
+}
+
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'checkstyle'
+
+group 'com.iprody.user.profile.e2e'
+version '1.0.0-SNAPSHOT'
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+repositories {
+    mavenCentral()
+}
+
+test {
+    useJUnitPlatform()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs += "$buildDir/generated/src/main/java"
+        }
+    }
+}
+
+dependencies {
+    //Open Api Generator dependencies
+    implementation(libs.openapi.tools.jackson)
+    implementation(libs.swagger.parser)
+
+    // Spring dependencies
+    implementation(libs.spring.boot.web)
+    implementation(libs.spring.boot.webflux)
+    implementation(libs.spring.boot.actuator)
+
+    // Third-party dependencies
+    implementation(libs.bundles.cucumber)
+    implementation(libs.apache.commons.io)
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+
+
+    // Test dependencies
+    testImplementation(libs.spring.boot.test)
+    testImplementation(libs.cucumber.junit)
+    testCompileOnly(libs.lombok)
+    testAnnotationProcessor(libs.lombok)
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+openApiGenerate {
+    generatorName = "java"
+    inputSpec = "$rootDir/src/main/resources/user-profile-v1.0.0.json"
+    outputDir = "$buildDir/generated"
+    apiPackage = "com.iprody.user.profile.e2e.generated.api"
+    modelPackage = "com.iprody.user.profile.e2e.generated.model"
+    skipOverwrite = true
+    configOptions = [
+            library     : "resttemplate",
+            useJakartaEe: "true",
+            dateLibrary : "java17"
+    ]
+}
+
+compileJava.dependsOn tasks.getByName("openApiGenerate")

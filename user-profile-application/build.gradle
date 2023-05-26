@@ -1,0 +1,57 @@
+plugins {
+    alias(libs.plugins.springframework)
+    alias(libs.plugins.liquibase)
+}
+
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'checkstyle'
+
+group 'com.iprody.user.profile'
+version '1.0.0-SNAPSHOT'
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+repositories {
+    mavenCentral()
+}
+
+test {
+    useJUnitPlatform()
+}
+
+bootJar {
+    enabled = true
+}
+
+dependencies {
+    //spring
+    implementation(libs.spring.boot.webflux)
+    implementation(libs.spring.boot.data.jpa)
+    implementation(libs.spring.boot.validation)
+    implementation(libs.spring.boot.actuator)
+    implementation(libs.springdoc)
+
+    //third party
+    implementation(libs.postgresql)
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+    implementation(libs.liquibase.core)
+    implementation(libs.prometheus)
+    implementation platform(libs.micrometer.tracing.bom)
+    implementation(libs.micrometer.tracing)
+    implementation(libs.micrometer.tracing.bridge.otel)
+
+    //testing
+    testImplementation(libs.spring.boot.test)
+    testCompileOnly(libs.lombok)
+    testAnnotationProcessor(libs.lombok)
+    testImplementation(libs.reactor.test)
+    testImplementation(libs.bundles.testcontainers)
+    implementation platform(libs.testcontainers.bom)
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

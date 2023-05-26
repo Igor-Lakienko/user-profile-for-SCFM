@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1678035969023-4
+      author: Viktoria Kenshenskaia
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: zone_id
+                  type: VARCHAR(255)
+            tableName: user_details
